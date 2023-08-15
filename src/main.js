@@ -47,7 +47,7 @@ bot.on(message('voice'), async (ctx) => {
 });
 
 bot.on(message('text'), async (ctx) => {
-    ctx.session ??= INITIAL_SESSION;
+    if (ctx.session) ctx.session = INITIAL_SESSION;
     try {
         await ctx.reply(code('Повідомлення прийнято, очикується відповідь від серверу...'));
 
