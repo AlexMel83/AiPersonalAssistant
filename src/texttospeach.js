@@ -2,7 +2,7 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { readFileSync } from 'fs';
 import jwt from 'jsonwebtoken';
-import axios from "axios"
+import axios from "axios";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -31,16 +31,40 @@ class TextConverter {
             }
         )
 
-        console.log(response.data.access_token);
         return response.data.access_token;
     }
 
-    textToSpeach(text) {
+    async textToSpeach(text) {
+        try {
+            const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
 
+            const data = {
+                iput: { text },
+                voice: {
+                    languageCode: "uk-UA",
+                    name: "uk-UA-Wavenet-A",
+                },
+                audioConfig: { audioEncoding: 'MP3' },
+            }
+
+            const accessToken = await this.getToken();
+
+            const response = await axios({
+                url,
+                method: 'POST',
+                data,
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+            return Buffer.from(response.data.audioContent, 'base64')
+        } catch (e) {
+            console.error('Error while text to speach', e.message)
+        }
     }
-
 }
 
 export const textConverter = new TextConverter();
 
-textConverter.getToken();
+textConverter.textToSpeach('Привіт')
