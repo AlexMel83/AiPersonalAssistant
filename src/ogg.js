@@ -4,7 +4,6 @@ import installer from '@ffmpeg-installer/ffmpeg';
 import { createWriteStream } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { removeFile } from './utils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,14 +20,13 @@ class OggConverter {
                     .inputOption('-t 30')
                     .output(outputPath)
                     .on('end', () => {
-                        removeFile(input);
                         resolve(outputPath);
                     })
                     .on('error', (err) => reject(err.message))
                     .run()
             })
         } catch (e) {
-            console.log('Error while creating mp3', e.message)
+            console.error('Error while creating mp3', e.message)
         }
     }
 
@@ -46,7 +44,7 @@ class OggConverter {
                 stream.on('finish', () => resolve(oggPath));
             })
         } catch (e) {
-            console.log('Error message while creating ogg', e.message);
+            console.error('Error message while creating ogg', e.message);
         }
     }
 }

@@ -6,6 +6,8 @@ import axios from "axios";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+let vardata;
+
 class TextConverter {
     async getToken() {
         const key = JSON.parse(
@@ -30,24 +32,23 @@ class TextConverter {
                 assertion: token,
             }
         )
-
-        return response.data.access_token;
+        return response.data.access_token
     }
 
-    async textToSpeach(text) {
+    async textToSpeech(text) {
         try {
-            const url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize';
+            const url = 'https://texttospeech.googleapis.com/v1/text:synthesize'
 
             const data = {
-                iput: { text },
+                input: { text },
                 voice: {
-                    languageCode: "uk-UA",
-                    name: "uk-UA-Wavenet-A",
+                    languageCode: 'ru-RU',
+                    name: 'ru-RU-Wavenet-C',
                 },
                 audioConfig: { audioEncoding: 'MP3' },
             }
 
-            const accessToken = await this.getToken();
+            const accessToken = await this.getToken()
 
             const response = await axios({
                 url,
@@ -58,13 +59,14 @@ class TextConverter {
                     'Content-Type': 'application/json',
                 },
             })
+
             return Buffer.from(response.data.audioContent, 'base64')
         } catch (e) {
-            console.error('Error while text to speach', e.message)
+            console.error('Error while text to speech', e.message)
         }
     }
 }
 
 export const textConverter = new TextConverter();
 
-textConverter.textToSpeach('Привіт')
+textConverter.textToSpeech('Hello');
